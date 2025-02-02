@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>查看反馈 - 一中学生の快乐老家</title>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(45deg, #4158D0, #C850C0);
+            font-family: Arial, sans-serif;
+            position: relative;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: white;
+            background: none;
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+
+        .back-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .feedback-list {
+            margin-top: 60px;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .feedback-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .feedback-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .feedback-content {
+            color: #333;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .back-btn {
+                top: 10px;
+                left: 10px;
+            }
+
+            .feedback-list {
+                margin-top: 50px;
+            }
+
+            .feedback-item {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="window.location.href='zhuyemian.html'">←</button>
+    
+    <div class="feedback-list" id="feedbackList">
+        <!-- 反馈内容将通过 JavaScript 动态添加 -->
+    </div>
+
+    <script>
+        // 检查是否为管理员
+        const userId = localStorage.getItem('userId');
+        if (userId !== '1') {
+            alert('权限不足');
+            window.location.href = 'zhuyemian.html';
+        }
+
+        // 获取反馈列表
+        async function loadFeedback() {
+            try {
+                const response = await fetch('/get_feedback');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const feedbackList = document.getElementById('feedbackList');
+                    feedbackList.innerHTML = data.feedback.map(f => `
+                        <div class="feedback-item">
+                            <div class="feedback-header">
+                                <span>用户：${f.nickname} (ID: ${f.userId})</span>
+                                <span>时间：${new Date(f.submitTime).toLocaleString()}</span>
+                            </div>
+                            <div class="feedback-content">${f.content}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    alert('加载失败：' + data.message);
+                }
+            } catch (error) {
+                alert('加载失败，请重试');
+            }
+        }
+
+        // 页面加载时获取反馈列表
+        loadFeedback();
+    </script>
+</body>
+</html> 
