@@ -65,15 +65,20 @@ def init_db():
 # 确保在应用启动时初始化数据库
 init_db()
 
-# 添加这个路由来处理根路径
+# 处理根路径请求
 @app.route('/')
-def serve_login():
-    return send_from_directory('.', 'denglu.html')
+def index():
+    return send_from_directory('.', 'index.html')
 
-# 添加这个路由来处理所有静态文件
+# 处理其他静态文件
 @app.route('/<path:filename>')
 def serve_static(filename):
     return send_from_directory('.', filename)
+
+# 处理 favicon 请求
+@app.route('/favicon.ico')
+def favicon():
+    return '', 204
 
 # 注册新用户
 @app.route('/register', methods=['POST'])
@@ -417,5 +422,5 @@ def get_users():
 
 if __name__ == '__main__':
     print("正在启动服务器...")
-    print("请在浏览器中访问: http://localhost:8080/denglu.html")
+    print("请在浏览器中访问: http://localhost:8080")
     app.run(debug=True, host='0.0.0.0', port=8080)
