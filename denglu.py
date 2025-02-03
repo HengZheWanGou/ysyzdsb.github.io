@@ -420,6 +420,31 @@ def get_users():
             'message': str(e)
         })
 
+# 添加删除反馈的路由
+@app.route('/delete_feedback/<int:feedback_id>', methods=['POST'])
+def delete_feedback(feedback_id):
+    try:
+        # 连接数据库
+        conn = sqlite3.connect('database/users.db')
+        c = conn.cursor()
+        
+        # 删除指定 ID 的反馈
+        c.execute('DELETE FROM feedback WHERE id = ?', (feedback_id,))
+        conn.commit()
+        
+        # 关闭连接
+        conn.close()
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+# 在查看反馈的路由中添加删除按钮的HTML
+@app.route('/view_feedback')
+def view_feedback():
+    # ... existing code ...
+    return render_template('view_feedback.html', feedbacks=feedbacks)
+
 if __name__ == '__main__':
     print("正在启动服务器...")
     print("请在浏览器中访问: http://localhost:8080")

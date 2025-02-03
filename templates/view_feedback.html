@@ -1,0 +1,43 @@
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>反馈内容</th>
+            <th>提交时间</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for feedback in feedbacks %}
+        <tr id="feedback-{{ feedback[0] }}">
+            <td>{{ feedback[0] }}</td>
+            <td>{{ feedback[1] }}</td>
+            <td>{{ feedback[2] }}</td>
+            <td>
+                <button class="btn btn-danger btn-sm" onclick="deleteFeedback({{ feedback[0] }})">删除</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+function deleteFeedback(feedbackId) {
+    if (confirm('确定要删除这条反馈吗？')) {
+        fetch(`/delete_feedback/${feedbackId}`, {
+            method: 'POST',
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById(`feedback-${feedbackId}`).remove();
+            } else {
+                alert('删除失败：' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('删除失败：' + error);
+        });
+    }
+}
+</script> 

@@ -1,0 +1,17 @@
+[build]
+  command = "pip install -r requirements.txt && python denglu.py"
+  publish = "public"
+
+[[plugins]]
+  package = "netlify-plugin-python"
+
+# 缓存配置
+[build.environment]
+  PYTHON_VERSION = "3.9"
+  
+[cache]
+  directories = [
+    "~/.cache/pip",
+    "venv"  # 如果使用虚拟环境
+  ]
+
