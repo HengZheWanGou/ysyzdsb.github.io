@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>一中学生の快乐老家 - 注册</title>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(45deg, #4158D0, #C850C0);
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .register-title {
+            color: black;
+            font-size: 2em;
+            margin-bottom: 30px;
+            animation: fadeIn 2s ease-in;
+            text-align: center;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .register-container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 2s ease-in;
+            width: 90%;
+            max-width: 300px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .register-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #cccccc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: not-allowed;
+            margin-top: 20px;
+        }
+
+        .register-btn.active {
+            background-color: #4158D0;
+            cursor: pointer;
+        }
+
+        .register-btn.active:hover {
+            background-color: #3448a7;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+            margin-top: 10px;
+            display: none;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-title">注册</div>
+
+    <div class="register-container">
+        <form id="registerForm" onsubmit="handleRegister(event)">
+            <input type="text" 
+                   class="input-field"
+                   id="nickname" 
+                   placeholder="请输入昵称" 
+                   required>
+            
+            <input type="password" 
+                   class="input-field" 
+                   id="password1"
+                   placeholder="请输入密码" 
+                   required
+                   onkeyup="checkPasswords()">
+            
+            <input type="password" 
+                   class="input-field" 
+                   id="password2"
+                   placeholder="请再次输入密码" 
+                   required
+                   onkeyup="checkPasswords()">
+            
+            <div class="error-message" id="passwordError">两次密码输入不一致！</div>
+            
+            <button type="submit" class="register-btn" id="registerBtn">注册新账号</button>
+        </form>
+    </div>
+
+    <div style="position: fixed; bottom: 10px; right: 10px; color: black; font-size: 12px;">
+        By 我叫横折弯钩
+    </div>
+
+    <script>
+        function checkPasswords() {
+            const password1 = document.getElementById('password1').value;
+            const password2 = document.getElementById('password2').value;
+            const registerBtn = document.getElementById('registerBtn');
+            const errorMessage = document.getElementById('passwordError');
+
+            if (password1 && password2) {
+                if (password1 === password2) {
+                    registerBtn.classList.add('active');
+                    errorMessage.style.display = 'none';
+                } else {
+                    registerBtn.classList.remove('active');
+                    errorMessage.style.display = 'block';
+                }
+            } else {
+                registerBtn.classList.remove('active');
+                errorMessage.style.display = 'none';
+            }
+        }
+
+        async function handleRegister(event) {
+            event.preventDefault();
+            
+            const nickname = document.getElementById('nickname').value;
+            const password1 = document.getElementById('password1').value;
+            const password2 = document.getElementById('password2').value;
+            
+            if (password1 === password2) {
+                try {
+                    console.log('开始发送注册请求...');
+                    const response = await fetch('/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            nickname: nickname,
+                            password: password1
+                        })
+                    });
+                    
+                    console.log('收到服务器响应');
+                    const data = await response.json();
+                    console.log('服务器返回数据:', data);
+                    
+                    if (data.success) {
+                        alert(data.message);
+                        window.location.href = 'index.html';
+                    } else {
+                        alert(data.message || '注册失败，请重试');
+                    }
+                } catch (error) {
+                    console.error('发生错误:', error);
+                    alert('注册失败，请重试。错误信息：' + error.message);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

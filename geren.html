@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>个人中心 - 一中学生の快乐老家</title>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            font-family: Arial, sans-serif;
+            position: relative;
+        }
+
+        .sidebar {
+            margin-top: 60px;
+            width: 200px;
+            background: white;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+
+        .menu-item {
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .menu-item:hover {
+            background: #f0f0f0;
+        }
+
+        .menu-item.active {
+            background: #4158D0;
+            color: white;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .profile-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .avatar-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            cursor: pointer;
+            object-fit: cover;
+        }
+
+        .info-item {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .info-item:hover {
+            background: #f0f0f0;
+        }
+
+        .edit-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #4158D0;
+            background: none;
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+
+        .back-btn:hover {
+            background-color: rgba(65, 88, 208, 0.1);
+        }
+
+        /* 添加密码查看按钮样式 */
+        .password-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .eye-btn {
+            cursor: pointer;
+            color: #4158D0;
+            background: none;
+            border: none;
+            padding: 5px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.3s;
+        }
+
+        .eye-btn:hover {
+            color: #3448a7;
+        }
+
+        /* 修改密码项样式，移除悬停效果 */
+        .info-item.password {
+            cursor: default;
+        }
+
+        .info-item.password:hover {
+            background: none;
+        }
+
+        /* 添加移动端适配样式 */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                margin-top: 0;
+                padding: 10px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            }
+
+            .content {
+                padding: 10px;
+            }
+
+            .profile-card {
+                margin-top: 10px;
+            }
+
+            .info-item {
+                padding: 15px 10px;
+                margin: 5px 0;
+            }
+
+            .back-btn {
+                top: 10px;
+                left: 10px;
+            }
+
+            .avatar {
+                width: 80px;
+                height: 80px;
+            }
+
+            .edit-input {
+                font-size: 16px; /* 防止iOS自动放大输入框 */
+                padding: 10px;
+            }
+
+            .password-container {
+                flex-wrap: wrap;
+            }
+
+            .eye-btn {
+                padding: 8px;
+            }
+        }
+
+        /* 适配超小屏幕 */
+        @media (max-width: 320px) {
+            .sidebar {
+                padding: 5px;
+            }
+
+            .content {
+                padding: 5px;
+            }
+
+            .profile-card {
+                padding: 15px;
+            }
+
+            .avatar {
+                width: 60px;
+                height: 60px;
+            }
+
+            .info-item {
+                padding: 12px 8px;
+                font-size: 0.9em;
+            }
+        }
+
+        /* 确保内容不会溢出屏幕 */
+        * {
+            box-sizing: border-box;
+            max-width: 100%;
+        }
+
+        /* 优化滚动体验 */
+        .content {
+            -webkit-overflow-scrolling: touch;
+            overflow-y: auto;
+        }
+
+        /* 添加退出登录按钮样式 */
+        .logout-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: #cc0000;
+        }
+
+        /* 确认对话框样式 */
+        .dialog-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .dialog-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 300px;
+            text-align: center;
+        }
+
+        .dialog-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .dialog-btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.3s;
+        }
+
+        .dialog-btn.confirm {
+            background-color: #ff4444;
+            color: white;
+        }
+
+        .dialog-btn.confirm:hover {
+            background-color: #cc0000;
+        }
+
+        .dialog-btn.cancel {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        .dialog-btn.cancel:hover {
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="window.location.href='zhuyemian.html'">←</button>
+
+    <div class="sidebar">
+        <div class="menu-item active">个人资料</div>
+    </div>
+
+    <div class="content">
+        <div class="profile-card">
+            <div class="avatar-container">
+                <img src="/static/avatars/default.png" alt="头像" class="avatar" id="userAvatar" onclick="window.location.href='touxiang.html'">
+            </div>
+            
+            <div class="info-item" onclick="editNickname()">
+                昵称：<span id="userNickname">加载中...</span>
+            </div>
+            
+            <div class="info-item">
+                ID：<span id="userId">加载中...</span>
+            </div>
+            
+            <div class="info-item password">
+                <div class="password-container">
+                    密码：<span id="userPassword">********</span>
+                    <button class="eye-btn" onclick="togglePassword()">👁️</button>
+                </div>
+            </div>
+
+            <!-- 添加退出登录按钮 -->
+            <button class="logout-btn" onclick="showLogoutConfirm()">退出登录</button>
+        </div>
+    </div>
+
+    <!-- 添加确认对话框 -->
+    <div class="dialog-overlay" id="logoutDialog">
+        <div class="dialog-box">
+            <div>确定要退出登录吗？</div>
+            <div class="dialog-buttons">
+                <button class="dialog-btn confirm" onclick="logout()">是</button>
+                <button class="dialog-btn cancel" onclick="hideLogoutConfirm()">否</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 从localStorage获取用户信息
+        const userId = localStorage.getItem('userId');
+        const userNickname = localStorage.getItem('userNickname');
+        
+        if (userId && userNickname) {
+            document.getElementById('userId').textContent = userId;
+            document.getElementById('userNickname').textContent = userNickname;
+        }
+        
+        function editNickname() {
+            const nicknameSpan = document.getElementById('userNickname');
+            const currentNickname = nicknameSpan.textContent;
+            
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = currentNickname;
+            input.className = 'edit-input';
+            
+            // 修改回车键支持
+            input.onkeyup = async (event) => {
+                if (event.key === 'Enter') {
+                    const newNickname = input.value.trim();
+                    if (newNickname && newNickname !== currentNickname) {
+                        try {
+                            const response = await fetch('/update_user', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    id: userId,
+                                    nickname: newNickname
+                                })
+                            });
+                            
+                            const data = await response.json();
+                            if (data.success) {
+                                localStorage.setItem('userNickname', newNickname);
+                                nicknameSpan.textContent = newNickname;
+                            } else {
+                                alert(data.message);
+                                nicknameSpan.textContent = currentNickname;
+                            }
+                        } catch (error) {
+                            alert('更新失败');
+                            nicknameSpan.textContent = currentNickname;
+                        }
+                    } else {
+                        nicknameSpan.textContent = currentNickname;
+                    }
+                    // 恢复原来的 span 元素
+                    input.parentNode.replaceChild(nicknameSpan, input);
+                }
+            };
+            
+            // 保持原有的 onblur 处理逻辑
+            input.onblur = async () => {
+                const newNickname = input.value.trim();
+                if (newNickname && newNickname !== currentNickname) {
+                    try {
+                        const response = await fetch('/update_user', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                id: userId,
+                                nickname: newNickname
+                            })
+                        });
+                        
+                        const data = await response.json();
+                        if (data.success) {
+                            localStorage.setItem('userNickname', newNickname);
+                            nicknameSpan.textContent = newNickname;
+                        } else {
+                            alert(data.message);
+                            nicknameSpan.textContent = currentNickname;
+                        }
+                    } catch (error) {
+                        alert('更新失败');
+                        nicknameSpan.textContent = currentNickname;
+                    }
+                } else {
+                    nicknameSpan.textContent = currentNickname;
+                }
+                // 恢复原来的 span 元素
+                input.parentNode.replaceChild(nicknameSpan, input);
+            };
+            
+            nicknameSpan.parentNode.replaceChild(input, nicknameSpan);
+            input.focus();
+        }
+        
+        // 添加密码显示切换功能
+        let isPasswordVisible = false;
+        let userRealPassword = '';
+
+        async function togglePassword() {
+            if (!userRealPassword) {
+                try {
+                    const response = await fetch(`/get_password?id=${userId}`);
+                    const data = await response.json();
+                    if (data.success) {
+                        userRealPassword = data.password;
+                    } else {
+                        alert('获取密码失败');
+                        return;
+                    }
+                } catch (error) {
+                    alert('获取密码失败');
+                    return;
+                }
+            }
+
+            const passwordSpan = document.getElementById('userPassword');
+            isPasswordVisible = !isPasswordVisible;
+            passwordSpan.textContent = isPasswordVisible ? userRealPassword : '********';
+        }
+        
+        // 获取用户头像
+        fetch(`/get_avatar?id=${userId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('userAvatar').src = `/static/avatars/${data.avatar}`;
+                }
+            });
+
+        // 显示退出确认对话框
+        function showLogoutConfirm() {
+            document.getElementById('logoutDialog').style.display = 'flex';
+        }
+
+        // 隐藏退出确认对话框
+        function hideLogoutConfirm() {
+            document.getElementById('logoutDialog').style.display = 'none';
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('userId');
+            localStorage.removeItem('userNickname');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

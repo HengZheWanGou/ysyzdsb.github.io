@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>一中学生の快乐老家 - 登录</title>
+    <style>
+        /* 设置整个页面的基本样式 */
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            /* 设置渐变背景色，从左上角到右下角 */
+            background: linear-gradient(45deg, #4158D0, #C850C0);
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* 欢迎标题的样式 */
+        .welcome-title {
+            color: black;
+            font-size: 2em; /* 调小了字体大小 */
+            margin-bottom: 30px;
+            /* 设置动画效果 */
+            animation: fadeIn 2s ease-in;
+            text-align: center;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        /* 登录框容器的样式 */
+        .login-container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 2s ease-in;
+            width: 90%;
+            max-width: 300px;
+        }
+
+        /* 输入框的样式 */
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        /* 登录按钮的样式 */
+        .login-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #4158D0;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .login-btn:hover {
+            background-color: #3448a7;
+        }
+
+        /* 注册按钮的样式 */
+        .register-btn {
+            background: none;
+            border: none;
+            color: #4158D0;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        .register-btn:hover {
+            text-decoration: underline;
+        }
+
+        /* 淡入动画效果 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 欢迎标题 -->
+    <div class="welcome-title">
+        欢迎来到<br>一中学生の快乐老家
+    </div>
+
+    <!-- 登录表单容器 -->
+    <div class="login-container">
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <!-- ID输入框 -->
+            <input type="number" 
+                   class="input-field" 
+                   id="userId"
+                   placeholder="请输入id" 
+                   required>
+            
+            <!-- 密码输入框 -->
+            <input type="password" 
+                   class="input-field" 
+                   id="userPassword"
+                   placeholder="请输入密码" 
+                   required>
+            
+            <!-- 登录按钮 -->
+            <button type="submit" class="login-btn">登录</button>
+            
+            <!-- 注册按钮 -->
+            <div style="text-align: right;">
+                <button type="button" class="register-btn" onclick="window.location.href='zhuce.html'">注册新账号</button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- 添加署名 -->
+    <div style="position: fixed; bottom: 10px; right: 10px; color: black; font-size: 12px;">
+        By 我叫横折弯钩
+    </div>
+
+    <script>
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const userId = document.getElementById('userId').value;
+            const password = document.getElementById('userPassword').value;
+            
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: userId,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // 保存用户信息到 localStorage
+                    localStorage.setItem('userId', userId);
+                    localStorage.setItem('userNickname', data.nickname);
+                    
+                    alert(data.message);
+                    window.location.href = 'zhuyemian.html';
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                alert('登录失败，请重试');
+            }
+        }
+    </script>
+</body>
+</html>
